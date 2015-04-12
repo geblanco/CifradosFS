@@ -15,4 +15,8 @@ public class Constants
         return i;
     }
 
+    public static final String TRANS_PARAM_ERR = "Para el cifrado por transposicion es neceserio un al menos un valor entero para el numero de columnas/filas";
+    public static final String VIG_PARAM_ERR = "Para el cifrado de Vigenere son necesarios el texto y la clave";
+    public static final String SIMAFIN_PARAM_ERR = "Para el cifrado simetrico afin es necesario el texto y las constantes de decimacion y de desplazamiento";
+    public static final String OP_NO_CONOCIDA = "Tipo de operacion no conocida";
 }

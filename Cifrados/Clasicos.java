@@ -3,9 +3,79 @@ package Cifrados;
 import Util.Constants;
 import Util.Formatter;
 import Util.Math;
+import Util.ParamsException;
 
 public class Clasicos
 {
+    public static final int TRANSPOSICION = 0;
+    public static final int VIGENERE = 1;
+    public static final int SUSAFIN = 2;
+
+    public class CifradoClasico
+    {
+        String text;
+
+        public CifradoClasico() { new CifradoClasico(""); }
+        public CifradoClasico(String text) {this.text = text;}
+
+        public String cifrar(int t, Object... args) throws ParamsException
+        {
+            return work(t, true, args);
+        }
+
+        public String descifrar(int t, Object... args) throws ParamsException
+        {
+            return work(t, false, args);
+        }
+
+        private String work(int t, boolean op, Object... args) throws ParamsException
+        {
+            if (t == TRANSPOSICION) {
+                if ( args.length == 0 || (args.length == 1 && !(args[0] instanceof Integer)))
+                    throw new ParamsException(Constants.TRANS_PARAM_ERR);
+
+                boolean CoF = false;
+                if (args.length > 1 && args[0] instanceof Boolean)
+                    CoF = (Boolean)args[0];
+
+                return op ? Transposicion.cifrar(this.text, CoF, (Integer)args[1]) : Transposicion.descifrar(this.text, CoF, (Integer) args[1]);
+            } else if (t == VIGENERE) {
+                if ( args.length < 2 || (!(args[0] instanceof String) || !(args[1] instanceof String)) )
+                    throw new ParamsException(Constants.VIG_PARAM_ERR);
+
+                return op ? Vigenere.cifrar((String)args[0], (String)args[1]) : Vigenere.descifrar((String) args[0], (String) args[1]);
+            } else if (t == SUSAFIN) {
+                if ( args.length < 3 || (!(args[0] instanceof String) || !(args[1] instanceof Integer) || !(args[2] instanceof Integer)) )
+                    throw new ParamsException(Constants.SIMAFIN_PARAM_ERR);
+
+                return op ? SustitucionAfin.cifrar((String)args[0], (Integer)args[1], (Integer)args[2]) : SustitucionAfin.descifrar((String) args[0], (Integer) args[1], (Integer) args[2]);
+            } else {
+                throw new ParamsException(Constants.OP_NO_CONOCIDA);
+            }
+        }
+
+        public String getText()
+        {
+            return text;
+        }
+
+        public void setText(String text)
+        {
+            this.text = text;
+        }
+    }
+
+    /**
+     * Obligatorio para toda operacion:
+     *
+     * String text
+     * int n
+     *
+     *
+     * Opcionales:
+     *
+     * boolean columna o fila, columna por defecto
+     */
     private static class Transposicion
     {
         /**
@@ -45,6 +115,12 @@ public class Clasicos
         }
     }
 
+    /**
+     * Obligatorio para toda operacion:
+     *
+     * String text
+     * String key
+     */
     private static class Vigenere
     {
         public static String cifrar(String text, String key)
@@ -80,18 +156,17 @@ public class Clasicos
         }
     }
 
-    private static class SustitucionMonoAfin
+    private static class SustitucionAfin
     {
         /**
          * Cifra un texto dado mediante la tecnica de sustitucion afin
          * @param text Texto a cifrar
-         * @param key  Clave de cifrado
          * @param a    Constante de decimacion (Debe ser primo relativo con el modulo del alfabeto)
          * @param b    Constante de desplazamiento
          * @return     Texto cifrado
          */
         //(Mi + b) * a mod27
-        public static String cifrar(String text, String key, int a, int b)
+        public static String cifrar(String text, int a, int b)
         {
             //Test 'a' to be prime with mod
             if (!Math.isPrime(a))
@@ -110,7 +185,7 @@ public class Clasicos
         }
 
         //(Ci – b) * inv(a, 27) mod27
-        public static String descifrar(String text, String key, int a, int b)
+        public static String descifrar(String text, int a, int b)
         {
             //Test 'a' to be prime with mod
             if (!Math.isPrime(a))
