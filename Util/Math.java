@@ -19,7 +19,7 @@ public class Math
     private int getInverse(int toI)
     {
         int i;
-        for (i = 0; i < module && ((toI * i) % module) != 1; i++) ;
+        for (i = 0; i < module && ((toI * i) % module) != 1; i++);
         return i;
     }
 
@@ -34,7 +34,7 @@ public class Math
     public static int mod(int n)
     {
         if (n < 0) return (n + Constants.ALFABETO.length);
-        return n;
+        return (n % Constants.ALFABETO.length);
     }
 
     public static int roundDiv(int x, int y)
@@ -44,7 +44,7 @@ public class Math
 
     public static boolean isPrime(int a)
     {
-        return getInverse(a, Constants.ALFABETO.length) != Constants.ALFABETO.length;
+        return ( getInverse(a, Constants.ALFABETO.length) != Constants.ALFABETO.length );
     }
 
     public class Frequency

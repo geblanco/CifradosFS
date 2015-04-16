@@ -11,7 +11,7 @@ public class Clasicos
     public static final int VIGENERE = 1;
     public static final int SUSAFIN = 2;
 
-    public class CifradoClasico
+    public static class CifradoClasico
     {
         String text;
 
@@ -31,14 +31,10 @@ public class Clasicos
         private String work(int t, boolean op, Object... args) throws ParamsException
         {
             if (t == TRANSPOSICION) {
-                if ( args.length == 0 || (args.length == 1 && !(args[0] instanceof Integer)))
+                if ( args.length < 3 || (!(args[0] instanceof String) || (!(args[1] instanceof Boolean) || !(args[2] instanceof Integer))) )
                     throw new ParamsException(Constants.TRANS_PARAM_ERR);
 
-                boolean CoF = false;
-                if (args.length > 1 && args[0] instanceof Boolean)
-                    CoF = (Boolean)args[0];
-
-                return op ? Transposicion.cifrar(this.text, CoF, (Integer)args[1]) : Transposicion.descifrar(this.text, CoF, (Integer) args[1]);
+                return op ? Transposicion.cifrar((String)args[0], (Boolean)args[1], (Integer)args[2]) : Transposicion.descifrar((String) args[0], (Boolean) args[1], (Integer) args[2]);
             } else if (t == VIGENERE) {
                 if ( args.length < 2 || (!(args[0] instanceof String) || !(args[1] instanceof String)) )
                     throw new ParamsException(Constants.VIG_PARAM_ERR);
@@ -70,11 +66,7 @@ public class Clasicos
      *
      * String text
      * int n
-     *
-     *
-     * Opcionales:
-     *
-     * boolean columna o fila, columna por defecto
+     * boolean columna o fila, true/false
      */
     private static class Transposicion
     {
@@ -103,14 +95,12 @@ public class Clasicos
         {
             String ret = "";
 
-            for (int j = 0; j < nC; j++)
-            {
-                for (int i = j; i < nF * nC; i += nC)
-                {
+            int c = 1;
+            for (int j = 0; j < nC; j++) {
+                for (int i = j; i < nF * nC; i += nC) {
                     ret += i >= text.length() ? "X" : text.charAt(i);
                 }
             }
-
             return Formatter.formatOutput(Formatter.replaceSpace(ret)).toUpperCase();
         }
     }
@@ -201,6 +191,45 @@ public class Clasicos
                 }
             }
             return Formatter.formatOutput(ret);
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        //Test Vigenere
+        CifradoClasico c = new CifradoClasico("HSSFL CQHDP QMIZX OGFVP NAQOD ZSBAS SQGIE QOPQM IZXOS UXPNA ZASJU YQONK JSBOW ATYAN KONQN NEQOS OUSOX PAJPI OQOSG UZNVD CFGXE JGLQW WZKWS LÑMEQ ONYNM ENZFQ HBBLV EHOMI JSNIJ TQAWA SJUXJ QOVMI PQODU FANVI OIYXE XQHUÑ IZCDL QLCQA WAHOM GJGDU YUNYG EDXME JDLMC LNAZA TCMOQ BUUPM PQOSO WCNAS NKUUB LVEJX PVXVO BUGNM WOJSM XYDRK UHBBD NFWWY XJNJC ÑZXRE YHBQA GOWUK UXBSF NXQLV OHOMN BWSUV CETOB QUBEJ KEJXM XXZVY XWODE ITJLQ UWNFH WCQRO GYZPX BPQMI DDSMU PINYS RTJUN AEOIL CQVOD QFMUU EOIÑI FQSMG MMGDK OBUNE NBTUG CLJZT QFIXN BGLUT HHZAI AILTO FQFLN UJYSJ ZGJ");
+        Object[] obj = {c.getText(),"JOAQUIN"};
+        try
+        {
+            String g = c.descifrar(VIGENERE, obj);
+            System.out.println("Descifrado: " + g);
+            Object[] obj2 = {g, "JOAQUIN"};
+            System.out.println("Check: " + c.getText().equals(c.cifrar(VIGENERE, obj2)));
+        } catch (ParamsException e)
+        {
+            e.printStackTrace();
+        }
+        //Test Sustitucion afin, no simetrico??
+        c = new CifradoClasico("UV IW GZ VC DF ZN QV PD VN FZ CQ WD WP VB CS QO FC QW NI VN QW VP ZN EO DS QV PC KW FC QW GZ VP ON BO XM CQ VC BL VN PO WN CB LW EV MK WZ NC WM CP OW NG ZV VD ML VS WB LW BO MO CS WH EO CS BC FW CM OV LU WH CL WN MW NC DK CT CP QV PZ NW EO CS IV CN ZD WS IV CU LO HZ DW SI OK WN WL NW QO PO IZ DW BZ VP CZ NG ZV VD NW IH LV UV CP WI HL VG ZO VN WH LC CP OU OV NV ZN NW IH LV SV PV NW IH LV VP VD QV MK ZD WD CE VN FC NX CQ VQ WN IV NQ WB VQ LW IZ RW XP VM CT WL NC QC BL OI VL C");
+        obj = new Object[]{c.getText(), 5, 2};
+        try {
+            String g = c.descifrar(SUSAFIN, obj);
+            System.out.println("Descifrado: " + g);
+            Object[] obj2 = new Object[]{g, 5, 2};
+            System.out.println("Check: " + Formatter.replaceSpace(c.getText()).equals(Formatter.replaceSpace(c.cifrar(SUSAFIN, obj2))));
+        } catch (ParamsException e) {
+            e.printStackTrace();
+        }
+        //Test transposicion, no simetrico por la sustitucion hasta rellenar los huecos
+        c = new CifradoClasico("NENPANUSAURTNEDEPACNODONAURARACNQSUXOOULNXNREAAXFDNNVXIEOZEX");
+        obj = new Object[]{c.getText(), true, 10};
+        try {
+            String g = c.descifrar(TRANSPOSICION, obj);
+            System.out.println("Descifrado: " + g);
+            Object[] obj2 = new Object[]{Formatter.replaceSpace(g), true, 10};
+            System.out.println("Check: " + c.getText().equals(c.cifrar(TRANSPOSICION, obj2)));
+        } catch (ParamsException e) {
+            e.printStackTrace();
         }
     }
 }
