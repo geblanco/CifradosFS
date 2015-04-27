@@ -2,8 +2,9 @@ package Interfaces;
 
 import Cifrados.CifradoGenerico;
 import Util.Constants;
-
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.GroupLayout;
 
 /**
  * Created by ivan on 24/04/15.
@@ -47,5 +48,38 @@ class PanelCifrado extends JPanel {
         this.add(playfair);
         this.add(hillDigramico);
         this.add(transposicion);
+
+        GroupLayout distribuyeCifrados = new GroupLayout(this);
+        this.setLayout(distribuyeCifrados);
+        distribuyeCifrados.setAutoCreateGaps(true);
+        distribuyeCifrados.setAutoCreateContainerGaps(true);
+
+        distribuyeCifrados.setHorizontalGroup(
+                distribuyeCifrados.createParallelGroup()
+                .addComponent(desplazamientoPuro)
+                .addComponent(decimacionPura)
+                .addComponent(adicionMultiplicacion)
+                .addComponent(vigenere)
+                .addComponent(beaufort)
+                .addComponent(claveContinua)
+                .addComponent(vernam)
+                .addComponent(playfair)
+                .addComponent(hillDigramico)
+                .addComponent(transposicion)
+        );
+
+        distribuyeCifrados.setVerticalGroup(
+                distribuyeCifrados.createSequentialGroup()
+                .addComponent(desplazamientoPuro)
+                .addComponent(decimacionPura)
+                .addComponent(adicionMultiplicacion)
+                .addComponent(vigenere)
+                .addComponent(beaufort)
+                .addComponent(claveContinua)
+                .addComponent(vernam)
+                .addComponent(playfair)
+                .addComponent(hillDigramico)
+                .addComponent(transposicion)
+        );
     }
 }
